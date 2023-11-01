@@ -1,18 +1,53 @@
-import { Router } from "express";
+import { Router, Request, response} from "express";
 import {CidadesController} from './../controllers'
+import { PrismaClient } from "@prisma/client";
+import { z } from "zod";
+import { StatusCodes } from "http-status-codes";
 
 const router = Router()
+
+const prisma = new PrismaClient()
 
 router.get('/', (req, res) =>
 {
     return res.send('Tá respondendo')
 })
 
+
+
 router.get("/cidades", CidadesController.getAllValidation,CidadesController.getAll)
 router.get("/cidades/:id", CidadesController.getByIdValidation,CidadesController.getById)
 router.put("/cidades/:id", CidadesController.updateIdValidation,CidadesController.updateById)
 router.delete("/cidades/:id", CidadesController.deleteByIdValidation,CidadesController.deleteById)
 router.post("/cidades", CidadesController.createValidation,CidadesController.create)
+
+router.get('/users', async(req,res) =>
+{
+    const users = await prisma.user.findMany()
+
+    return res.send({users})
+})
+
+router.post('/users', async (request) =>
+{
+    const createUserSchema = z.object({
+        nome: z.string(),
+        email: z.string().email(),
+    })
+
+    const {nome, email} = createUserSchema.parse(request.body)
+
+    await prisma.user.create({
+    data: {
+        nome,
+        email
+    }
+})
+
+return response.status(StatusCodes.CREATED).send()
+
+})
+
 
 
 export { router }
