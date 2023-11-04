@@ -48,6 +48,13 @@ return res.status(StatusCodes.CREATED).send()
 
 })
 
+router.delete('/users/:id',async (req, res) => {
 
+    await prisma.user.delete({
+        where:{id: req.params.id}
+    })
+
+    return res.status(StatusCodes.OK).json("apagou")
+} )
 
 export { router }
