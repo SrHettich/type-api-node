@@ -28,14 +28,14 @@ router.get('/users', async(req,res) =>
     return res.send({users})
 })
 
-router.post('/users', async (request) =>
+router.post('/users', async (req, res) =>
 {
     const createUserSchema = z.object({
         nome: z.string(),
         email: z.string().email(),
     })
 
-    const {nome, email} = createUserSchema.parse(request.body)
+    const {nome, email} = createUserSchema.parse(req.body)
 
     await prisma.user.create({
     data: {
@@ -44,7 +44,7 @@ router.post('/users', async (request) =>
     }
 })
 
-return response.status(StatusCodes.CREATED).send()
+return res.status(StatusCodes.CREATED).send()
 
 })
 
